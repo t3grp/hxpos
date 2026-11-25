@@ -5,6 +5,12 @@ repository and `/docker-compose.coolify.yml`. Pin its full Git commit SHA and
 disable automatic deployments. Use the Operating Systems team and the dedicated
 HiddenXP AWS server. This is a source build of the fork, not upstream images.
 
+Set the custom build command to `docker compose --parallel 1 build` and retain
+Coolify's default start command. The local source-built images use
+`pull_policy: never`: Coolify builds them first, then starts those images rather
+than launching a second build during `compose up`. Registry images for the
+database and cache retain their normal pull behavior.
+
 The initial host is 2 vCPU, 8 GiB RAM and 500 GiB encrypted gp3. Two API workers
 and one ingestion child are configured. This is a small initial lane below the
 4-vCPU sizing in `docs/deploy.md`; load capacity has not been established.

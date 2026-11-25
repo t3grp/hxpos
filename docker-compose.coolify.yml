@@ -32,7 +32,7 @@ x-backend-environment: &backend-environment
 
 x-backend: &backend
   image: hxpos-backend:${HIDDENXPOS_SOURCE_SHA:?required}
-  pull_policy: build
+  pull_policy: never
   build:
     context: .
     dockerfile: backend/Dockerfile
@@ -146,7 +146,7 @@ services:
 
   frontend:
     image: hxpos-frontend:${HIDDENXPOS_SOURCE_SHA:?required}
-    pull_policy: build
+    pull_policy: never
     build:
       context: ./frontend
       dockerfile: Dockerfile
