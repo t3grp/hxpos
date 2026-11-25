@@ -55,7 +55,7 @@ services:
       -c shared_buffers=512MB -c effective_cache_size=1536MB
       -c maintenance_work_mem=128MB -c work_mem=8MB
     shm_size: 512mb
-    volumes: [postgres_data:/var/lib/postgresql/data]
+    volumes: ['postgres_data:/var/lib/postgresql/data']
     networks: [data]
     logging: *logging
     restart: unless-stopped
@@ -85,7 +85,7 @@ services:
     mem_limit: 512m
 
   migrate:
-    <<: *backend
+    !!merge <<: *backend
     command: agenticos db upgrade
     networks: [data]
     depends_on:
@@ -94,13 +94,13 @@ services:
     mem_limit: 1536m
 
   bootstrap:
-    <<: *backend
+    !!merge <<: *backend
     command:
       - sh
       - -c
       - exec agenticos cmd bootstrap --org HiddenXP --email "$$BOOTSTRAP_EMAIL" --password "$$BOOTSTRAP_PASSWORD"
     environment:
-      <<: *backend-environment
+      !!merge <<: *backend-environment
       BOOTSTRAP_EMAIL: ${BOOTSTRAP_EMAIL:?required}
       BOOTSTRAP_PASSWORD: ${BOOTSTRAP_PASSWORD:?required}
     depends_on:
@@ -110,12 +110,12 @@ services:
     mem_limit: 1536m
 
   app:
-    <<: *backend
+    !!merge <<: *backend
     command: >-
       uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2
       --timeout-worker-healthcheck 60 --ws websockets-sansio
     expose: ["8000"]
-    volumes: [media_data:/app/media]
+    volumes: ['media_data:/app/media']
     depends_on:
       bootstrap: {condition: service_completed_successfully}
     restart: unless-stopped
@@ -129,9 +129,9 @@ services:
     mem_limit: 1536m
 
   worker:
-    <<: *backend
+    !!merge <<: *backend
     command: python -m app.worker
-    volumes: [media_data:/app/media]
+    volumes: ['media_data:/app/media']
     depends_on:
       bootstrap: {condition: service_completed_successfully}
     restart: unless-stopped
